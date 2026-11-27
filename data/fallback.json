@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "انتخابات شورای مشورتی دانشجویان",
+    "status": "داده پشتیبان (نمونه)",
+    "lastUpdate": "—",
+    "endTime": "—",
+    "showCandidateVotes": false,
+    "mainSeats": 5,
+    "reserveSeats": 2
+  },
+  "entries": [
+    {
+      "year": "1401",
+      "eligible": 60,
+      "voted": 0
+    },
+    {
+      "year": "1402",
+      "eligible": 65,
+      "voted": 0
+    },
+    {
+      "year": "1403",
+      "eligible": 70,
+      "voted": 0
+    },
+    {
+      "year": "1404",
+      "eligible": 75,
+      "voted": 0
+    },
+    {
+      "year": "1405",
+      "eligible": 80,
+      "voted": 0
+    }
+  ],
+  "candidates": [
+    {
+      "name": "کاندیدا نمونه ۱",
+      "votes": null
+    },
+    {
+      "name": "کاندیدا نمونه ۲",
+      "votes": null
+    },
+    {
+      "name": "کاندیدا نمونه ۳",
+      "votes": null
+    }
+  ]
+}
