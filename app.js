@@ -11,8 +11,8 @@ const CONFIG = {
   defaultTitle: 'انتخابات شورای مشورتی دانشجویان',
   defaultMainSeats: 5,      // اگر mainSeats در شیت نبود
   defaultReserveSeats: 2,   // اگر reserveSeats در شیت نبود
-  // اگر در ستون votes شیت، «درصد» (مثلاً 35.4) وارد می‌کنید روی true بگذارید
-  // اگر «تعداد رأی» وارد می‌کنید روی false بگذارید
+  // true: ستون votes در شیت خودش درصد است (مثلاً 42.5 یا 42.5%)
+  // false: ستون votes تعداد رأی است و درصد از روی آن محاسبه می‌شود
   votesColumnIsPercent: true,
 };
 
@@ -28,7 +28,7 @@ const MAP = {
     status:        ['status', 'voting status', 'وضعیت', 'وضعیت رأی‌گیری'],
     lastUpdate:    ['lastUpdate', 'last updated', 'updatedAt', 'آخرین به‌روزرسانی', 'زمان به‌روزرسانی'],
     endTime:       ['endTime', 'close time', 'endAt', 'ساعت پایان', 'زمان پایان', 'پایان'],
-    showVotes:     ['showCandidateVotes', 'show_votes', 'showVotes', 'showResults', 'نمایش_نتایج', 'نمایش آرا', 'نمایش رأی‌ها', 'نمایش درصد'],
+    showVotes:     ['showCandidateVotes', 'show_votes', 'showVotes', 'showResults', 'نمایش_نتایج', 'نمایش آرا', 'نمایش رأی‌ها'],
     mainSeats:     ['mainSeats', 'main seats', 'اعضای اصلی', 'تعداد اعضای اصلی', 'منتخبین اصلی'],
     reserveSeats:  ['reserveSeats', 'reserve seats', 'alternates', 'علی‌البدل', 'اعضای علی‌البدل', 'تعداد علی‌البدل'],
     totalEligible: ['totalEligible', 'eligible total', 'کل واجدین شرایط', 'تعداد واجدین شرایط'],
@@ -43,7 +43,7 @@ const MAP = {
     eligible: ['eligible', 'total', 'capacity', 'واجدین', 'واجدین شرایط', 'کل', 'تعداد کل', 'کل دانشجویان'],
     voted:    ['voted', 'participants', 'participated', 'شرکت‌کنندگان', 'مشارکت‌کنندگان', 'رأی‌دهندگان', 'تعداد رأی‌دهندگان'],
     name:     ['name', 'candidate', 'candidate name', 'نام', 'کاندیدا', 'نامزد', 'نام کاندیدا', 'نام نامزد'],
-    votes:    ['votes', 'vote count', 'percent', 'percentage', 'درصد', 'درصد آرا', 'رأی', 'آرا', 'آراء', 'تعداد رأی', 'تعداد آرا'],
+    votes:    ['votes', 'vote count', 'رأی', 'آرا', 'آراء', 'تعداد رأی', 'تعداد آرا'],
   },
   // مقادیر ستون نوع (type)
   types: {
@@ -232,7 +232,10 @@ function finalize(model) {
       totalVoted: voted,
     },
     entries: model.entries,
-    candidates: model.candidates,
+    // وقتی نتایج مخفی است، مقدار رأی اصلاً در مدل نگه‌داری نمی‌شود
+    candidates: parseBool(m.showVotes)
+      ? model.candidates
+      : model.candidates.map(c => ({ name: c.name, votes: null })),
   };
 }
 
@@ -272,6 +275,7 @@ function progress(percent, color) {
   }, fill);
 }
 
+// رنگ میله: از کاهی (کم) تا آبیِ تمپر (زیاد)، مثل رنگ‌های حرارت‌دهی فولاد
 const temperColor = p => `hsl(${Math.round(42 + (215 - 42) * Math.max(0, Math.min(100, p)) / 100)} 55% 42%)`;
 
 function statusState(text) {
@@ -336,33 +340,31 @@ function renderCandidates(model) {
   }
 
   if (!showVotes) {
+    // آرا و رتبه‌ها عمداً هرگز وارد DOM نمی‌شوند؛ فقط نام‌ها به ترتیب الفبا
     $('#cand-h').textContent = 'فهرست کاندیداها';
-    note.textContent = 'درصد آرا و رتبه‌بندی پس از اعلام رسمی نتایج نمایش داده می‌شود.';
+    note.textContent = 'تعداد آرا و رتبه‌بندی پس از اعلام رسمی نتایج نمایش داده می‌شود.';
     const names = model.candidates.map(c => c.name).sort((a, b) => a.localeCompare(b, 'fa'));
     box.replaceChildren(h('ul', { class: 'chips' }, names.map(n => h('li', { text: n }))));
     return;
   }
 
   $('#cand-h').textContent = 'نتایج انتخابات';
-
-  // مرتب‌سازی نزولی بر اساس مقدار عددی ستون votes (چه درصد باشد چه تعداد رأی)
   const sorted = [...model.candidates]
-    .map(c => ({ ...c, raw: c.votes || 0 }))
-    .sort((a, b) => b.raw - a.raw || a.name.localeCompare(b.name, 'fa'));
+    .map(c => ({ ...c, votes: c.votes || 0 }))
+    .sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name, 'fa'));
 
-  const sumRaw = sorted.reduce((a, c) => a + c.raw, 0);
-  const base = totalVoted > 0 ? totalVoted : sumRaw;
+  // درصد هر کاندیدا: مستقیم از ستون votes یا محاسبه از تعداد رأی
+  const sumVotes = sorted.reduce((a, c) => a + c.votes, 0);
+  const base = totalVoted > 0 ? totalVoted : sumVotes;
+  const percentOf = c => CONFIG.votesColumnIsPercent
+    ? c.votes
+    : (base > 0 ? (c.votes / base) * 100 : 0);
 
-  note.textContent =
-    `${fmt.format(mainSeats)} عضو اصلی و ${fmt.format(reserveSeats)} عضو علی‌البدل. ` +
-    'فقط درصد آرای هر کاندید نمایش داده می‌شود.';
+  note.textContent = `${fmt.format(mainSeats)} عضو اصلی و ${fmt.format(reserveSeats)} عضو علی‌البدل.`;
 
   const rows = sorted.map((c, i) => {
     const seat = i < mainSeats ? 'main' : i < mainSeats + reserveSeats ? 'reserve' : '';
-    const p = CONFIG.votesColumnIsPercent
-      ? c.raw
-      : (base > 0 ? (c.raw / base) * 100 : 0);
-
+    const p = percentOf(c);
     return h('li', { class: 'cand', 'data-seat': seat },
       h('div', { class: 'cand-top' },
         h('span', { class: 'rank', text: fmt.format(i + 1) }),
@@ -472,8 +474,3 @@ if (typeof document !== 'undefined' && document.addEventListener) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 }
-```[cite: 9]
-
-### دو نکته مهم برای اجرای بی‌دردسر این تغییر:
-1. **در طول رأی‌گیری:** ستون `votes` در شیت را همچنان **خالی** بگذارید و `showCandidateVotes` را `FALSE` نگه دارید[cite: 1, 8].
-2. **موقع اعلام نتایج:** در ستون `votes` درصد هر نفر را (مثلاً `42.5` برای ۴۲.۵ درصد) قرار دهید و `showCandidateVotes` را `TRUE` کنید[cite: 1, 8]. چون `votesColumnIsPercent: true` است، کد همان `42.5` را به صورت `۴۲٫۵٪` نمایش می‌دهد و هیچ عدد خام رأیی نه در سایت و نه در CSV منتشر نمی‌شود.
