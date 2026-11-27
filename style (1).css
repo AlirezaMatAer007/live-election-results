@@ -1,0 +1,119 @@
+:root {
+  --ink: #13222D;
+  --muted: #586873;
+  --paper: #F2F4F5;
+  --card: #FFFFFF;
+  --line: #D3DADF;
+  --track: #E3E8EB;
+  --accent: #1D4B73;
+  --tint: #EAF0F5;
+  --open: #1E7A55;
+  --closed: #5A6670;
+  --pending: #8A6410;
+  --radius: 6px;
+  --font: "Vazirmatn", Tahoma, "Segoe UI", sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.wrap { width: min(1040px, 100%); margin-inline: auto; padding-inline: 20px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); margin: 0 0 1rem; }
+
+/* ---------- Header ---------- */
+.site-head { background: var(--ink); color: #fff; padding-bottom: 28px; }
+.temper { height: 5px; background: linear-gradient(to left, hsl(42 62% 52%), hsl(28 70% 48%), hsl(300 30% 45%), hsl(215 60% 45%)); }
+.org { margin: 24px 0 4px; color: #B8C4CC; font-size: .95rem; }
+.site-head h1 { margin: 0; font-size: clamp(1.5rem, 4.5vw, 2.5rem); font-weight: 800; line-height: 1.4; }
+
+/* ---------- Status bar ---------- */
+.statusbar { background: var(--card); border-bottom: 1px solid var(--line); }
+.statusbar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0; padding-block: 0; }
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 14px 0; padding-inline-end: 16px; }
+.stat + .stat { padding-inline-start: 16px; border-inline-start: 1px solid var(--line); }
+.stat-label { font-size: .8rem; color: var(--muted); }
+.stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat-action { align-items: flex-start; justify-content: center; }
+.source { font-size: .78rem; color: var(--muted); }
+
+.pill { align-self: flex-start; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: .92rem; color: #fff; background: var(--closed); }
+.pill[data-state="open"] { background: var(--open); }
+.pill[data-state="pending"] { background: var(--pending); }
+
+.btn {
+  font: inherit; font-weight: 600; font-size: .92rem;
+  padding: 4px 16px; border-radius: var(--radius);
+  color: #fff; background: var(--accent); border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.btn:hover { background: #163A5A; }
+.btn:disabled { opacity: .65; cursor: progress; }
+:focus-visible { outline: 3px solid #E0A526; outline-offset: 2px; }
+
+/* ---------- Main ---------- */
+main { padding-block: 28px 40px; }
+section { margin-bottom: 36px; }
+h2 { font-size: 1.3rem; margin: 0 0 12px; line-height: 1.5; }
+
+.notice { margin: 0 0 20px; padding: 10px 14px; border: 1px solid #E0C27A; background: #FFF6DD; border-radius: var(--radius); font-size: .95rem; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; }
+.kpi-label { display: block; color: var(--muted); font-size: .88rem; }
+.kpi-value { display: block; font-size: 1.9rem; font-weight: 800; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.kpi-unit { font-size: .9rem; font-weight: 500; color: var(--muted); margin-inline-start: 6px; }
+
+/* ---------- Participation bars ---------- */
+.bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.bar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.bar-title { font-weight: 700; }
+.bar-nums { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.track { height: 14px; background: var(--track); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; width: 0; background: var(--c, var(--accent)); border-radius: 3px; transition: width .6s ease; }
+.pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---------- Candidates ---------- */
+.chips { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.chips li { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 14px; font-weight: 600; }
+
+.ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cand { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+.cand[data-seat="main"] { background: var(--tint); border-color: #9DB6CB; }
+.cand-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.rank { min-width: 2rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cand-name { font-weight: 700; flex: 1 1 140px; }
+.cand-votes { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .92rem; }
+.badge { font-size: .8rem; font-weight: 700; padding: 0 10px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: transparent; }
+.badge.main { background: var(--accent); color: #fff; }
+.cand .fill { background: var(--accent); }
+.cand[data-seat="reserve"] .fill { background: #6C8CA8; }
+.cand[data-seat=""] .fill { background: #A3B2BD; }
+
+/* ---------- Footer ---------- */
+.site-foot { border-top: 1px solid var(--line); padding-block: 14px; color: var(--muted); font-size: .85rem; background: var(--card); }
+.site-foot p { margin: 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .stat + .stat { border-inline-start: 0; padding-inline-start: 0; border-top: 1px solid var(--line); }
+  .statusbar-grid { grid-template-columns: 1fr; }
+  .stat { flex-direction: row; justify-content: space-between; align-items: center; padding-inline-end: 0; }
+  .stat-action { flex-direction: column; align-items: stretch; gap: 4px; }
+  .pill { align-self: center; }
+  .kpi-value { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: none; }
+}

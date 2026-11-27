@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>آمار و نتایج انتخابات شورای مشورتی دانشجویان | مواد و متالورژی فردوسی</title>
+  <meta name="description" content="آمار مشارکت و نتایج انتخابات شورای مشورتی دانشجویان دانشکده مهندسی مواد و متالورژی دانشگاه فردوسی مشهد">
+  <meta name="theme-color" content="#13222D">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="temper" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="org">دانشکده مهندسی مواد و متالورژی، دانشگاه فردوسی مشهد</p>
+    <h1 id="page-title">انتخابات شورای مشورتی دانشجویان</h1>
+  </div>
+</header>
+
+<section class="statusbar" aria-label="وضعیت رأی‌گیری">
+  <div class="wrap statusbar-grid">
+    <div class="stat">
+      <span class="stat-label">وضعیت رأی‌گیری</span>
+      <span class="pill" id="status-pill" data-state="neutral">در حال بارگذاری…</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">ساعت پایان</span>
+      <span class="stat-value" id="end-time">—</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">آخرین به‌روزرسانی داده</span>
+      <span class="stat-value" id="updated">—</span>
+    </div>
+    <div class="stat stat-action">
+      <button type="button" id="refresh-btn" class="btn">به‌روزرسانی دستی</button>
+      <span class="source" id="source-note"></span>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <p id="notice" class="notice" role="status" aria-live="polite" hidden></p>
+
+  <noscript><p class="notice">برای مشاهده آمار، جاوااسکریپت مرورگر باید فعال باشد.</p></noscript>
+
+  <section aria-labelledby="kpi-h">
+    <h2 id="kpi-h" class="sr-only">آمار کلی مشارکت</h2>
+    <div id="kpis" class="kpis"></div>
+  </section>
+
+  <section aria-labelledby="years-h">
+    <h2 id="years-h">مشارکت به تفکیک سال ورودی</h2>
+    <div id="year-bars"></div>
+  </section>
+
+  <section aria-labelledby="cand-h">
+    <h2 id="cand-h">کاندیداها</h2>
+    <p id="cand-note" class="muted"></p>
+    <div id="cand-list"></div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>اطلاعات این صفحه هر ۶۰ ثانیه به‌صورت خودکار به‌روز می‌شود. آخرین دریافت در مرورگر: <span id="fetched">—</span></p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
