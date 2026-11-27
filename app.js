@@ -9,8 +9,6 @@ const CONFIG = {
   refreshMs: 60000,
   timeoutMs: 12000,
   defaultTitle: 'انتخابات شورای مشورتی دانشجویان',
-  defaultMainSeats: 5,      // اگر mainSeats در شیت نبود
-  defaultReserveSeats: 2,   // اگر reserveSeats در شیت نبود
   // true: ستون votes در شیت خودش درصد است (مثلاً 42.5 یا 42.5%)
   // false: ستون votes تعداد رأی است و درصد از روی آن محاسبه می‌شود
   votesColumnIsPercent: true,
@@ -29,8 +27,6 @@ const MAP = {
     lastUpdate:    ['lastUpdate', 'last updated', 'updatedAt', 'آخرین به‌روزرسانی', 'زمان به‌روزرسانی'],
     endTime:       ['endTime', 'close time', 'endAt', 'ساعت پایان', 'زمان پایان', 'پایان'],
     showVotes:     ['showCandidateVotes', 'show_votes', 'showVotes', 'showResults', 'نمایش_نتایج', 'نمایش آرا', 'نمایش رأی‌ها'],
-    mainSeats:     ['mainSeats', 'main seats', 'اعضای اصلی', 'تعداد اعضای اصلی', 'منتخبین اصلی'],
-    reserveSeats:  ['reserveSeats', 'reserve seats', 'alternates', 'علی‌البدل', 'اعضای علی‌البدل', 'تعداد علی‌البدل'],
     totalEligible: ['totalEligible', 'eligible total', 'کل واجدین شرایط', 'تعداد واجدین شرایط'],
     totalVoted:    ['totalVoted', 'total voters', 'کل رأی‌دهندگان', 'تعداد رأی‌دهندگان', 'شرکت‌کنندگان کل'],
   },
@@ -226,9 +222,7 @@ function finalize(model) {
       lastUpdate: m.lastUpdate || '',
       endTime: m.endTime || '',
       showVotes: parseBool(m.showVotes),
-      mainSeats: toInt(m.mainSeats, CONFIG.defaultMainSeats),
-      reserveSeats: toInt(m.reserveSeats, CONFIG.defaultReserveSeats),
-      totalEligible: eligible,
+          totalEligible: eligible,
       totalVoted: voted,
     },
     entries: model.entries,
@@ -328,7 +322,7 @@ function renderYears(model) {
 }
 
 function renderCandidates(model) {
-  const { showVotes, mainSeats, reserveSeats, totalVoted } = model.meta;
+  const { showVotes, totalVoted } = model.meta;
   const box = $('#cand-list');
   const note = $('#cand-note');
 
@@ -360,16 +354,14 @@ function renderCandidates(model) {
     ? c.votes
     : (base > 0 ? (c.votes / base) * 100 : 0);
 
-  note.textContent = `${fmt.format(mainSeats)} عضو اصلی و ${fmt.format(reserveSeats)} عضو علی‌البدل.`;
+  note.textContent = 'درصد آرای هر کاندیدا نسبت به شرکت‌کنندگان ورودی/گروه خود محاسبه شده است.';
 
   const rows = sorted.map((c, i) => {
-    const seat = i < mainSeats ? 'main' : i < mainSeats + reserveSeats ? 'reserve' : '';
     const p = percentOf(c);
-    return h('li', { class: 'cand', 'data-seat': seat },
+    return h('li', { class: 'cand' },
       h('div', { class: 'cand-top' },
         h('span', { class: 'rank', text: fmt.format(i + 1) }),
         h('span', { class: 'cand-name', text: c.name }),
-        seat && h('span', { class: `badge ${seat}`, text: seat === 'main' ? 'منتخب اصلی' : 'علی‌البدل' }),
         h('span', { class: 'cand-votes' }, h('span', { class: 'pct', text: pct(p) }))),
       progress(p));
   });
